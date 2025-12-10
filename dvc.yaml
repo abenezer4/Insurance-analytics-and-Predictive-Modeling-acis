@@ -1,0 +1,8 @@
+stages:
+  preprocess_clean_data:
+    cmd: python src/run_cleaning.py
+    deps:
+      - src/run_cleaning.py
+      - data/MachineLearningRating_v3.txt
+    outs:
+      - data/clean_data.csv

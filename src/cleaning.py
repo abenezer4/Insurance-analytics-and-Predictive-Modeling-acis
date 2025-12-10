@@ -22,6 +22,18 @@ def clean_column_names(df: pd.DataFrame) -> pd.DataFrame:
         .str.replace("-", "_")
         .str.replace("/", "_")
     )
+    if "totalclaims" not in df.columns:
+        print(f"[] ❌ Column 'totalclaims' not found.")
+        return
+
+    # Ensure we have numeric dtype (NaN-safe)
+    s = pd.to_numeric(df["totalclaims"], errors="coerce")
+
+    non_zero = (s != 0).sum()
+    total    = s.notna().sum()          # ignore NaNs in denominator
+    pct      = (non_zero / total * 100) if total else 0.0
+
+    print(f"[] Non-zero totalclaims: {non_zero:,} / {total:,}  ({pct:.2f}%)")
     return df
 
 
@@ -73,6 +85,18 @@ def convert_data_types(df: pd.DataFrame) -> pd.DataFrame:
     for col in categorical_like:
         if col in df.columns:
             df[col] = df[col].astype("category")
+    if "totalclaims" not in df.columns:
+        print(f"[] ❌ Column 'totalclaims' not found.")
+        return
+
+    # Ensure we have numeric dtype (NaN-safe)
+    s = pd.to_numeric(df["totalclaims"], errors="coerce")
+
+    non_zero = (s != 0).sum()
+    total    = s.notna().sum()          # ignore NaNs in denominator
+    pct      = (non_zero / total * 100) if total else 0.0
+
+    print(f"[] Non-zero totalclaims: {non_zero:,} / {total:,}  ({pct:.2f}%)")
 
     return df
 
@@ -103,6 +127,18 @@ def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
             df[col] = df[col].fillna(df[col].mode()[0])
         except Exception:
             df[col] = df[col].fillna("Unknown")
+    if "totalclaims" not in df.columns:
+        print(f"[] ❌ Column 'totalclaims' not found.")
+        return
+
+    # Ensure we have numeric dtype (NaN-safe)
+    s = pd.to_numeric(df["totalclaims"], errors="coerce")
+
+    non_zero = (s != 0).sum()
+    total    = s.notna().sum()          # ignore NaNs in denominator
+    pct      = (non_zero / total * 100) if total else 0.0
+
+    print(f"[] Non-zero totalclaims: {non_zero:,} / {total:,}  ({pct:.2f}%)")
 
     return df
 
@@ -125,6 +161,18 @@ def add_derived_fields(df: pd.DataFrame) -> pd.DataFrame:
 
     if "totalclaims" in df.columns:
         df["has_claim"] = (df["totalclaims"] > 0).astype(int)
+    if "totalclaims" not in df.columns:
+        print(f"[] ❌ Column 'totalclaims' not found.")
+        return
+
+    # Ensure we have numeric dtype (NaN-safe)
+    s = pd.to_numeric(df["totalclaims"], errors="coerce")
+
+    non_zero = (s != 0).sum()
+    total    = s.notna().sum()          # ignore NaNs in denominator
+    pct      = (non_zero / total * 100) if total else 0.0
+
+    print(f"[] Non-zero totalclaims: {non_zero:,} / {total:,}  ({pct:.2f}%)")
 
     return df
 
@@ -139,6 +187,7 @@ def winsorize_series(series: pd.Series, lower=0.01, upper=0.99) -> pd.Series:
         return series
 
     q_low, q_high = series.quantile([lower, upper])
+    
     return np.clip(series, q_low, q_high)
 
 
@@ -147,7 +196,18 @@ def apply_outlier_treatment(df: pd.DataFrame) -> pd.DataFrame:
 
     for col in numeric_cols:
         df[col] = winsorize_series(df[col])
+    if "totalclaims" not in df.columns:
+        print(f"[] ❌ Column 'totalclaims' not found.")
+        return
 
+    # Ensure we have numeric dtype (NaN-safe)
+    s = pd.to_numeric(df["totalclaims"], errors="coerce")
+
+    non_zero = (s != 0).sum()
+    total    = s.notna().sum()          # ignore NaNs in denominator
+    pct      = (non_zero / total * 100) if total else 0.0
+
+    print(f"[] Non-zero totalclaims: {non_zero:,} / {total:,}  ({pct:.2f}%)")
     return df
 
 
@@ -168,7 +228,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df = convert_data_types(df)
     df = handle_missing_values(df)
     df = add_derived_fields(df)
-    df = apply_outlier_treatment(df)
+    
 
     return df
 
