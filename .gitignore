@@ -1,3 +1,6 @@
-/venv4 
-/data_storage 
+/MachineLearningRating_v3.txt
+/clean_data.csv
+.dvc/
+/data_storage
 /dvc_storage
+/venv4
